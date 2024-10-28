@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alumni-Student Matching</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box; /* Ensures width includes padding and border */
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+        }
+        .result p {
+            margin: 5px 0;
+        }
+        .alumni-profile {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .alumni-profile img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-right: 15px;
+            border: 2px solid #ddd;
+        }
+        .alumni-details {
+            flex-grow: 1;
+        }
+        .contact-info p {
+            margin: 0;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+        .contact-info img {
+            width: 18px;
+            height: 18px;
+            margin-right: 8px;
+        }
+        .contact-info a {
+            color: #007bff;
+            text-decoration: none;
+            margin-left: 10px;
+        }
+        .contact-info a:hover {
+            text-decoration: underline;
+        }
+        .bookmark-btn, .calendar-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-top: 10px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        .bookmark-btn {
+            background-color: #f0ad4e;
+            color: white;
+        }
+        .bookmark-btn:hover {
+            background-color: #ec971f;
+        }
+        .calendar-btn {
+            background-color: #007bff;
+            color: white;
+        }
+        .calendar-btn:hover {
+            background-color: #0056b3;
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Alumni-Student Matching</h2>
+        
+        <label for="target-industry">Select Target Industry:</label>
+        <select id="target-industry" required>
+            <option value="" disabled selected>Select an industry</option>
+            <option value="Tech">Tech</option>
+            <option value="Finance">Finance</option>
+            <option value="Consulting">Consulting</option>
+        </select>
+
+        <label for="target-role">Select Target Role:</label>
+        <select id="target-role" required>
+            <option value="" disabled selected>Select a role</option>
+            <option value="Data Science">Data Analyst / Data Science</option>
+            <option value="Corporate Banking">Investment Banker / Corporate Banking</option>
+            <option value="Strategy">Strategy Consultant / Strategy</option>
+            <option value="Software Engineering">Software Engineer</option>
+            <option value="Risk Management">Risk Manager / Risk Management</option>
+        </select>
+
+        <label for="pre-isb-degree">Pre-ISB Undergraduate Degree:</label>
+        <select id="pre-isb-degree" required>
+            <option value="" disabled selected>Select a degree</option>
+            <option value="Engineering">Engineering</option>
+            <option value="Business">Business</option>
+            <option value="Arts">Arts</option>
+            <option value="Science">Science</option>
+        </select>
+
+        <label for="pre-isb-work-ex">Years of Work Experience Before ISB:</label>
+        <input type="number" id="pre-isb-work-ex" placeholder="Enter years of work experience" required min="0">
+
+        <button onclick="matchAlumni()">Find Matching Alumni</button>
+
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        const alumniData = [
+        // Existing 10 Profiles
+        {
+            alumni_name: 'Alumni X', 
+            industry: 'Tech', 
+            expertise: 'Data Science', 
+            years_experience: 5, 
+            pre_isb_degree: 'Engineering',
+            pre_isb_work_ex: 4,
+            img_url: 'https://via.placeholder.com/80', 
+            email: 'alumniX@example.com',
+            linkedin: 'https://linkedin.com/in/alumniX',
+            resume_url: 'https://example.com/resumeX.pdf'
+        },
+        {
+            alumni_name: 'Alumni Y', 
+            industry: 'Finance', 
+            expertise: 'Corporate Banking', 
+            years_experience: 10, 
+            pre_isb_degree: 'Business',
+            pre_isb_work_ex: 6,
+            img_url: 'https://via.placeholder.com/80',
+            whatsapp: '+1234567890',
+            linkedin: 'https://linkedin.com/in/alumniY',
+            resume_url: 'https://example.com/resumeY.pdf'
+        },
+        {
+            alumni_name: 'Alumni Z', 
+            industry: 'Consulting', 
+            expertise: 'Strategy', 
+            years_experience: 7, 
+            pre_isb_degree: 'Engineering',
+            pre_isb_work_ex: 5,
+            img_url: 'https://via.placeholder.com/80',
+            email: 'alumniZ@example.com',
+            linkedin: 'https://linkedin.com/in/alumniZ',
+            resume_url: 'https://example.com/resumeZ.pdf'
+        },
+        {
+            alumni_name: 'Alumni W', 
+            industry: 'Tech', 
+            expertise: 'Software Engineering', 
+            years_experience: 3, 
+            pre_isb_degree: 'Engineering',
+            pre_isb_work_ex: 2,
+            img_url: 'https://via.placeholder.com/80',
+            whatsapp: '+9876543210',
+            linkedin: 'https://linkedin.com/in/alumniW',
+            resume_url: 'https://example.com/resumeW.pdf'
+        },
+        {
+            alumni_name: 'Alumni Q', 
+            industry: 'Finance', 
+            expertise: 'Risk Management', 
+            years_experience: 8, 
+            pre_isb_degree: 'Science',
+            pre_isb_work_ex: 7,
+            img_url: 'https://via.placeholder.com/80',
+            linkedin: 'https://linkedin.com/in/alumniQ',
+            resume_url: 'https://example.com/resumeQ.pdf'
+        },
+        {
+            alumni_name: 'Alumni A', 
+            industry: 'Consulting', 
+            expertise: 'Operations Consulting', 
+            years_experience: 9, 
+            pre_isb_degree: 'Business',
+            pre_isb_work_ex: 6,
+            img_url: 'https://via.placeholder.com/80',
+            email: 'alumniA@example.com',
+            linkedin: 'https://linkedin.com/in/alumniA',
+            resume_url: 'https://example.com/resumeA.pdf'
+        },
+        {
+            alumni_name: 'Alumni B', 
+            industry: 'Tech', 
+            expertise: 'Artificial Intelligence', 
+            years_experience: 6, 
+            pre_isb_degree: 'Science',
+            pre_isb_work_ex: 3,
+            img_url: 'https://via.placeholder.com/80',
+            email: 'alumniB@example.com',
+            linkedin: 'https://linkedin.com/in/alumniB',
+            resume_url: 'https://example.com/resumeB.pdf'
+        },
+        {
+            alumni_name: 'Alumni C', 
+            industry: 'Finance', 
+            expertise: 'Private Equity', 
+            years_experience: 12, 
+            pre_isb_degree: 'Engineering',
+            pre_isb_work_ex: 8,
+            img_url: 'https://via.placeholder.com/80',
+            whatsapp: '+8765432109',
+            linkedin: 'https://linkedin.com/in/alumniC',
+            resume_url: 'https://example.com/resumeC.pdf'
+        },
+        {
+            alumni_name: 'Alumni D', 
+            industry: 'Tech', 
+            expertise: 'Cloud Computing', 
+            years_experience: 4, 
+            pre_isb_degree: 'Engineering',
+            pre_isb_work_ex: 2,
+            img_url: 'https://via.placeholder.com/80',
+            linkedin: 'https://linkedin.com/in/alumniD',
+            resume_url: 'https://example.com/resumeD.pdf'
+        },
+        {
+            alumni_name: 'Alumni E', 
+            industry: 'Consulting', 
+            expertise: 'Human Capital Consulting', 
+            years_experience: 5, 
+            pre_isb_degree: 'Arts',
+            pre_isb_work_ex: 3,
+            img_url: 'https://via.placeholder.com/80',
+            email: 'alumniE@example.com',
+            linkedin: 'https://linkedin.com/in/alumniE',
+            resume_url: 'https://example.com/resumeE.pdf'
+        },
+
+        // Additional 10 Profiles
+        {
+            alumni_name: 'Alumni F', 
+            industry: 'Finance', 
+            expertise: 'Investment Banking', 
+            years_experience: 6, 
+            pre_isb_degree: 'Business',
+            pre_isb_work_ex: 4,
+            img_url: 'https://via.placeholder.com/80',
+            email: 'alumniF@example.com',
+            linkedin: 'https://linkedin.com/in/alumniF',
+            resume_url: 'https://example.com/resumeF.pdf'
+        },
+        {
+            alumni_name: 'Alumni G', 
+            industry: 'Tech', 
+            expertise: 'Cybersecurity', 
+            years_experience: 8, 
+            pre_isb_degree: 'Science',
+            pre_isb_work_ex: 6,
+            img_url: 'https://via.placeholder.com/80',
+            whatsapp: '+9876543001',
+            linkedin: 'https://linkedin.com/in/alumniG',
+            resume_url: 'https://example.com/resumeG.pdf'
+        },
+        {
+            alumni_name: 'Alumni H', 
+            industry: 'Consulting', 
+            expertise: 'Digital Transformation', 
+            years_experience: 10, 
+            pre_isb_degree: 'Engineering',
+            pre_isb_work_ex: 7,
+            img_url: 'https://via.placeholder.com/80',
+            email: 'alumniH@example.com',
+            linkedin: 'https://linkedin.com/in/alumniH',
+            resume_url: 'https://example.com/resumeH.pdf'
+        },
+        {
+            alumni_name: 'Alumni I', 
+            industry: 'Finance', 
+            expertise: 'Wealth Management', 
+            years_experience: 9, 
+            pre_isb_degree: 'Business',
+            pre_isb_work_ex: 6,
+            img_url: 'https://via.placeholder.com/80',
+            linkedin: 'https://linkedin.com/in/alumniI',
+            resume_url: 'https://example.com/resumeI.pdf'
+        },
+        {
+            alumni_name: 'Alumni J', 
+            industry: 'Tech', 
+            expertise: 'Product Management', 
+            years_experience: 4, 
+            pre_isb_degree: 'Arts',
+            pre_isb_work_ex: 2,
+            img_url: 'https://via.placeholder.com/80',
+            email: 'alumniJ@example.com',
+            linkedin: 'https://linkedin.com/in/alumniJ',
+            resume_url: 'https://example.com/resumeJ.pdf'
+        },
+        {
+            alumni_name: 'Alumni K', 
+            industry: 'Consulting', 
+            expertise: 'Sustainability Consulting', 
+            years_experience: 5, 
+            pre_isb_degree: 'Science',
+            pre_isb_work_ex: 3,
+            img_url: 'https://via.placeholder.com/80',
+            linkedin: 'https://linkedin.com/in/alumniK',
+            resume_url: 'https://example.com/resumeK.pdf'
+        },
+        {
+            alumni_name: 'Alumni L', 
+            industry: 'Finance', 
+            expertise: 'Venture Capital', 
+            years_experience: 7, 
+            pre_isb_degree: 'Business',
+            pre_isb_work_ex: 5,
+            img_url: 'https://via.placeholder.com/80',
+            whatsapp: '+9987654321',
+            linkedin: 'https://linkedin.com/in/alumniL',
+            resume_url: 'https://example.com/resumeL.pdf'
+        },
+        {
+            alumni_name: 'Alumni M', 
+            industry: 'Tech', 
+            expertise: 'Blockchain Development', 
+            years_experience: 5, 
+            pre_isb_degree: 'Engineering',
+            pre_isb_work_ex: 3,
+            img_url: 'https://via.placeholder.com/80',
+            email: 'alumniM@example.com',
+            linkedin: 'https://linkedin.com/in/alumniM',
+            resume_url: 'https://example.com/resumeM.pdf'
+        },
+        {
+            alumni_name: 'Alumni N', 
+            industry: 'Consulting', 
+            expertise: 'Marketing Strategy', 
+            years_experience: 8, 
+            pre_isb_degree: 'Arts',
+            pre_isb_work_ex: 5,
+            img_url: 'https://via.placeholder.com/80',
+            whatsapp: '+8765432123',
+            linkedin: 'https://linkedin.com/in/alumniN',
+            resume_url: 'https://example.com/resumeN.pdf'
+        },
+        {
+            alumni_name: 'Alumni O', 
+            industry: 'Tech', 
+            expertise: 'DevOps Engineering', 
+            years_experience: 6, 
+            pre_isb_degree: 'Science',
+            pre_isb_work_ex: 4,
+            img_url: 'https://via.placeholder.com/80',
+            email: 'alumniO@example.com',
+            linkedin: 'https://linkedin.com/in/alumniO',
+            resume_url: 'https://example.com/resumeO.pdf'
+        }
+    ];
+
+        // Minimum match count by role
+        const roleMatchCount = {
+            'Data Science': 3,
+            'Corporate Banking': 2,
+            'Strategy': 2,
+            'Software Engineering': 4,
+            'Risk Management': 2
+        };
+
+        // Function to calculate match percentage
+        function calculateMatchScore(alumni, studentData) {
+            let score = 0;
+            const maxScore = 100;
+            const criteria = ['industry', 'expertise', 'pre_isb_degree'];
+
+            criteria.forEach((criterion) => {
+                if (alumni[criterion] === studentData[criterion]) {
+                    score += (maxScore / criteria.length);
+                }
+            });
+
+            // Adding weight for similar work experience (2-year range)
+            const workExDifference = Math.abs(alumni.pre_isb_work_ex - studentData.pre_isb_work_ex);
+            if (workExDifference <= 2) {
+                score += 20;  // Give 20 points for close work experience
+            }
+
+            return Math.min(score, 100); // Ensure score is capped at 100
+        }
+
+        // Function to match alumni
+        function matchAlumni() {
+            const targetIndustry = document.getElementById("target-industry").value;
+            const targetRole = document.getElementById("target-role").value;
+            const preIsbDegree = document.getElementById("pre-isb-degree").value;
+            const preIsbWorkEx = parseInt(document.getElementById("pre-isb-work-ex").value, 10);
+
+            // Validate if all fields are filled
+            if (!targetIndustry || !targetRole || !preIsbDegree || isNaN(preIsbWorkEx)) {
+                alert("Please fill in all the fields.");
+                return;
+            }
+
+            const studentData = {
+                industry: targetIndustry,
+                expertise: targetRole,
+                pre_isb_degree: preIsbDegree,
+                pre_isb_work_ex: preIsbWorkEx
+            };
+
+            let resultHTML = '';
+            
+            // Filter matching alumni based on industry, role, pre-ISB degree, and work experience
+            const matchedAlumni = alumniData.filter(alumni => {
+                return (
+                    alumni.industry === targetIndustry &&
+                    alumni.expertise.includes(targetRole)
+                );
+            });
+
+            // Get the number of matches to display based on the role, with a minimum of 2
+            const matchLimit = roleMatchCount[targetRole] || 2; // Fallback to 2 if no entry is found
+
+            const limitedMatches = matchedAlumni.slice(0, matchLimit); // Show matches as per the role's limit
+
+            if (limitedMatches.length > 0) {
+                limitedMatches.forEach(alumni => {
+                    const matchScore = calculateMatchScore(alumni, studentData); // Calculate match score
+                    resultHTML += `
+                    <div class="alumni-profile">
+                        <img src="${alumni.img_url}" alt="${alumni.alumni_name}'s profile picture">
+                        <div class="alumni-details">
+                            <p><strong>Name:</strong> ${alumni.alumni_name}</p>
+                            <p><strong>Expertise:</strong> ${alumni.expertise}</p>
+                            <p><strong>Years of Experience:</strong> ${alumni.years_experience}</p>
+                            <p><strong>Pre-ISB Degree:</strong> ${alumni.pre_isb_degree}</p>
+                            <p><strong>Pre-ISB Work Experience:</strong> ${alumni.pre_isb_work_ex} years</p>
+                            <p><strong>Match Score:</strong> ${matchScore}%</p>
+                            <div class="contact-info">`;
+                    
+                    // Adding email if available
+                    if (alumni.email) {
+                        resultHTML += `
+                            <p><img src="https://img.icons8.com/ios-filled/50/000000/email.png" alt="Email Icon"><a href="mailto:${alumni.email}">${alumni.email}</a></p>`;
+                    }
+                    
+                    // Adding WhatsApp if available
+                    if (alumni.whatsapp) {
+                        resultHTML += `
+                            <p><img src="https://img.icons8.com/color/48/000000/whatsapp.png" alt="WhatsApp Icon"><a href="https://wa.me/${alumni.whatsapp.replace('+', '')}" target="_blank">${alumni.whatsapp}</a></p>`;
+                    }
+                    
+                    // Adding LinkedIn (all alumni should have LinkedIn)
+                    resultHTML += `
+                            <p><img src="https://img.icons8.com/color/48/000000/linkedin.png" alt="LinkedIn Icon"><a href="${alumni.linkedin}" target="_blank">LinkedIn Profile</a></p>`;
+                    
+                    // Adding resume link
+                    resultHTML += `
+                            <p><img src="https://img.icons8.com/material-outlined/24/000000/resume.png" alt="Resume Icon"><a href="${alumni.resume_url}" target="_blank">View Resume</a></p>`;
+
+                    // Calendar integration
+                    resultHTML += `
+                            <div class="button-container">
+                                <button class="calendar-btn" onclick="scheduleMeeting('${alumni.alumni_name}')">📅 Schedule Meeting</button>
+                                <button class="bookmark-btn" onclick="bookmarkAlumni('${alumni.alumni_name}')">⭐ Bookmark</button>
+                            </div>`;
+
+                    resultHTML += `
+                            </div>
+                        </div>
+                    </div><hr>`;
+                });
+            } else {
+                resultHTML = '<p>No suitable match found.</p>';
+            }
+
+            document.getElementById("result").innerHTML = resultHTML;
+        }
+
+        // Bookmark alumni function
+        function bookmarkAlumni(alumniName) {
+            alert(alumniName + " has been bookmarked!");
+        }
+
+        // Schedule meeting function (Mock calendar integration)
+        function scheduleMeeting(alumniName) {
+            const calendarUrl = "https://calendar.google.com/calendar/u/0/r/eventedit";
+            window.open(calendarUrl, '_blank');
+            alert("Scheduling a meeting with " + alumniName);
+        }
+    </script>
+</body>
+</html>
